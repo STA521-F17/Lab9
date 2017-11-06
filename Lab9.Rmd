@@ -1,6 +1,8 @@
 ---
-title: "Lab9: R Notebook"
-output: html_notebook
+title: 'Lab9: R Notebook'
+output:
+  html_document: default
+  html_notebook: default
 ---
 
 ## Introduction to JAGS
@@ -10,6 +12,10 @@ output: html_notebook
 - High level scripting language for automatic MCMC for Bayesian models
 
 - to run on your own machine, you will need to install jags locally (see computing resources on website for links)
+
+- Download the latest JAGS from [here](https://sourceforge.net/projects/mcmc-jags/files/JAGS/)
+
+- [Here](http://www.jkarreth.net/files/bayes-cph_Tutorial-JAGS.pdf) is a good online tutorial with lots of demos. This tutorial also walks you through installing JAGS on your local machine step by step
 
 - to use JAGS we need to specify 
     + data & fixed parameters
@@ -34,7 +40,7 @@ rr.model = function() {
   }
   phi ~ dgamma(1.0E-6, 1.0E-6)  # approximate p(phi) = 1/phi
   alpha0  ~ dnorm(0, 1.0E-10)  # approximate p(alpha_0) = 1
-  
+
   for (j in 1:p) {
       prec.beta[j] <- lambda.beta*phi
       beta.s[j] ~ dnorm(0, prec.beta[j])
@@ -77,7 +83,7 @@ X = X[,-1]  # drop intercept
 
 # Create a data list with inputs for JAGS
 scales = apply(X, 2, FUN=function(x) {
-  sd(x)*sqrt(length(x) - 1)})
+  sd(x)*sqrt((length(x) - 1) / length(x))})
 Xbar = apply(X, 2, mean)
 scaled.X = scale(X, center=Xbar, scale = scales)
 data = list(Y = sqrt(College$Apps),   # variance stabilizing transformation
@@ -134,6 +140,7 @@ plot(rr.sim)
 print(rr.sim)
 ```
 
+For more details on DIC, see wikipedia [here](https://en.wikipedia.org/wiki/Deviance_information_criterion).
 
 Compare to Ridge Regression:
 
@@ -172,7 +179,7 @@ HPDinterval(as.mcmc(theta[,"lambda.beta"]))
 ```
 
 
-How does the GCV estimate of  $\lambda$ compare to the posterior mean? or where does it fall in the distribution?
+How does the GCV estimate of  $\lambda$ compare to the posterior mean? or where does it fall in the distribution
 
 ## To do  or think about
 
